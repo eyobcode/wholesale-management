@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Card, Button } from '../../components/common/index.js';
 import { FormField, Input, Select, TextArea, AsyncSelect } from '../../components/common/Form/index.jsx';
 import { factoryService } from '../../services/factoryService.js';
-import { useCreatePurchase, purchaseService } from '../../services/purchaseService.js';
+import { purchaseService } from '../../services/purchaseService.js';
+import { useCreatePurchase } from '../../hooks/usePurchases.js';
 import { showToast } from '../../utils/toast.js';
 import { handleBackendErrors } from '../../utils/errorHandler.js';
 
