@@ -1,5 +1,5 @@
 from django.db import models
-from ..core.models import TimeStampedModel
+from ..core.models import TimeStampedModel, PaymentMethod
 from ..factories.models import Factory
 from datetime import datetime
 from django.utils import timezone
@@ -54,6 +54,13 @@ class Purchase(TimeStampedModel):
             "total_purchase_amount - amount_paid_now. "
             "This amount is added to factory balance."
         )
+    )
+    payment_method = models.CharField(
+        max_length=20,
+        choices=PaymentMethod.choices,
+        blank=True,
+        null=True,
+        help_text="Payment method used (CBE, Telebirr, etc.)"
     )
     notes = models.TextField(
         blank=True,
