@@ -13,7 +13,7 @@ export default function SaleFullEditForm({ initialData, onSuccess, onCancel }) {
     customer: '',
     date: '',
     currency: 'ETB',
-    payment_type: 'cash',
+
     amount_paid_now: '',
     payment_method: '',
     notes: ''
@@ -37,7 +37,7 @@ export default function SaleFullEditForm({ initialData, onSuccess, onCancel }) {
         customer: initialData.customer || '',
         date: formattedDate,
         currency: initialData.currency || 'ETB',
-        payment_type: initialData.payment_type || 'cash',
+
         amount_paid_now: initialData.amount_paid_now !== null && initialData.amount_paid_now !== undefined ? initialData.amount_paid_now : '',
         payment_method: initialData.payment_method || '',
         notes: initialData.notes || ''
@@ -101,7 +101,7 @@ export default function SaleFullEditForm({ initialData, onSuccess, onCancel }) {
     if (!formData.customer) newErrors.customer = 'Customer is required.';
     if (!formData.date) newErrors.date = 'Date is required.';
     if (!formData.currency) newErrors.currency = 'Currency is required.';
-    if (!formData.payment_type) newErrors.payment_type = 'Payment Type is required.';
+
     if (formData.amount_paid_now === '' || formData.amount_paid_now === null) newErrors.amount_paid_now = 'Amount paid is required.';
 
     if (Object.keys(newErrors).length > 0) {
@@ -110,11 +110,11 @@ export default function SaleFullEditForm({ initialData, onSuccess, onCancel }) {
       return;
     }
 
+    // payment_type is determined server-side
     const payload = {
       customer: formData.customer,
       date: formData.date,
       currency: formData.currency,
-      payment_type: formData.payment_type,
       amount_paid_now: parseFloat(formData.amount_paid_now || 0),
       payment_method: formData.payment_method,
       notes: formData.notes
@@ -196,32 +196,7 @@ export default function SaleFullEditForm({ initialData, onSuccess, onCancel }) {
         </FormField>
       </div>
 
-      <FormField label="Payment Type" required error={errors.payment_type}>
-        <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginTop: '8px' }}>
-          {[
-            { value: 'cash', label: 'Cash' },
-            { value: 'partial', label: 'Partial' },
-            { value: 'credit', label: 'Credit' }
-          ].map((type) => (
-            <label key={type.value} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.95rem' }}>
-              <input
-                type="radio"
-                name="payment_type"
-                value={type.value}
-                checked={formData.payment_type === type.value}
-                onChange={handleChange}
-                style={{ width: '18px', height: '18px', accentColor: 'var(--primary-color)' }}
-              />
-              {type.label}
-            </label>
-          ))}
-        </div>
-        {errors.payment_type && (
-          <div className="field-error-message" style={{ color: 'var(--danger-color)', fontSize: '0.85rem', marginTop: '6px' }}>
-            {errors.payment_type}
-          </div>
-        )}
-      </FormField>
+
 
       <FormField label="Amount Paid Now" required error={errors.amount_paid_now}>
         <Input
