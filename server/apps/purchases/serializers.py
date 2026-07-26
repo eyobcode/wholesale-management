@@ -174,6 +174,7 @@ class PurchaseSerializer(serializers.ModelSerializer):
             'currency',
             'total_purchase_amount',
             'amount_paid_now',
+            'payment_method',
             'unpaid_amount',
             'notes',
             'is_deletable',
@@ -205,6 +206,7 @@ class PurchaseCreateSerializer(serializers.ModelSerializer):
             'date',
             'currency',
             'amount_paid_now',
+            'payment_method',
             'notes',
             'items',
             'shipping_code',
@@ -235,6 +237,7 @@ class PurchaseCreateSerializer(serializers.ModelSerializer):
     def validate(self, data):
         items_data = data.get('items', [])
         amount_paid = data.get('amount_paid_now', 0)
+        payment_method = data.get('payment_method')
 
         # Calculate approximate total from submitted items
         estimated_total = 0
@@ -253,6 +256,15 @@ class PurchaseCreateSerializer(serializers.ModelSerializer):
                 f"Amount paid ({amount_paid}) cannot exceed "
                 f"total purchase amount ({estimated_total})."
             )
+
+        # Force payment_method when there is payment
+        if amount_paid > 0:
+            if not payment_method:
+                raise serializers.ValidationError(
+                     "Payment method is required when 'Amount Paid Now' > 0."
+                )
+        else:
+            data['payment_method'] = None
         return data
 
     @transaction.atomic
@@ -300,6 +312,7 @@ class PurchaseUpdateSerializer(serializers.ModelSerializer):
             'date',
             'currency',
             'amount_paid_now',
+            'payment_method',
             'notes',
             'shipping_code',
             'total_purchase_amount',
