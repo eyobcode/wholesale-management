@@ -17,7 +17,7 @@ export default function SaleCreate() {
     customer: null,
     date: new Date().toISOString().split('T')[0],
     currency: 'ETB',
-    payment_type: 'cash',
+
     amount_paid_now: '',
     payment_method: null,
     notes: '',
@@ -106,7 +106,7 @@ export default function SaleCreate() {
     if (!formData.customer) newErrors.customer = 'Customer is required';
     if (!formData.date) newErrors.date = 'Date is required';
     if (!formData.currency) newErrors.currency = 'Currency is required';
-    if (!formData.payment_type) newErrors.payment_type = 'Payment Type is required';
+
 
     formData.items.forEach((item, index) => {
       if (!item.stock_batch) newErrors[`items.${index}.stock_batch`] = 'Required';
@@ -120,9 +120,10 @@ export default function SaleCreate() {
       return;
     }
 
-    // Submit payload
+    // Submit payload (payment_type is determined server-side)
+    const { payment_type, ...restFormData } = formData;
     const payload = {
-      ...formData,
+      ...restFormData,
       amount_paid_now: formData.amount_paid_now ? parseFloat(formData.amount_paid_now) : 0,
       items: formData.items.map(item => ({
         ...item,
@@ -269,28 +270,6 @@ export default function SaleCreate() {
                 </div>
                 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))', gap: '20px' }}>
-                  <FormField label="Payment Type" required error={errors.payment_type}>
-                    <div style={{ display: 'flex', gap: '24px', alignItems: 'center', height: '40px' }}>
-                      {[
-                        { value: 'cash', label: 'Cash' },
-                        { value: 'partial', label: 'Partial' },
-                        { value: 'credit', label: 'Credit' }
-                      ].map((type) => (
-                        <label key={type.value} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.95rem' }}>
-                          <input
-                            type="radio"
-                            name="payment_type"
-                            value={type.value}
-                            checked={formData.payment_type === type.value}
-                            onChange={handleChange}
-                            style={{ width: '18px', height: '18px', accentColor: 'var(--primary-color)' }}
-                          />
-                          {type.label}
-                        </label>
-                      ))}
-                    </div>
-                  </FormField>
-
                   <FormField label="Amount Paid Now" error={errors.amount_paid_now}>
                     <Input 
                       type="number"
