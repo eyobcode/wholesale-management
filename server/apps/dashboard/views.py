@@ -297,20 +297,14 @@ class DashboardViewSet(viewsets.ViewSet):
     def _get_total_customer_credit(self) -> Decimal:
         """
         Sum of positive customer balances (money owed to you).
-
         Formula per customer:
-            balance = initial_credit + SUM(sale.credit_amount) - SUM(income.paid_amount)
-
-        We compute this entirely in the DB to avoid N+1 queries.
+            balance = initial_credit + SUM(sale.total_sale_amount) - SUM(income.paid_amount)
         """
-        from django.db.models import Subquery, OuterRef
-
-        # Aggregate credit amounts per customer
         credit_totals = (
             Customer.objects.filter(is_active=True)
             .annotate(
-                sale_credit=Coalesce(
-                    Sum("sales__credit_amount"), Decimal("0")
+                sale_total=Coalesce(
+                    Sum("sales__total_sale_amount"), Decimal("0")
                 ),
                 payments_in=Coalesce(
                     Sum("income_records__paid_amount"), Decimal("0")
@@ -318,7 +312,7 @@ class DashboardViewSet(viewsets.ViewSet):
             )
             .annotate(
                 balance=ExpressionWrapper(
-                    F("initial_credit") + F("sale_credit") - F("payments_in"),
+                    F("initial_credit") + F("sale_total") - F("payments_in"),
                     output_field=DecimalField(max_digits=20, decimal_places=2),
                 )
             )
@@ -468,9 +462,7 @@ class DashboardViewSet(viewsets.ViewSet):
                 {"error": str(e)},
                 status=500,
             )
-    # ────────────────────────────────────────────────────────────
-    # PROFIT TREND  GET /api/dashboard/profit-trend/
-    # ────────────────────────────────────────────────────────────
+
 
     @action(detail=False, methods=["get"], url_path="profit-trend")
     def profit_trend(self, request):
@@ -807,7 +799,6 @@ class DashboardViewSet(viewsets.ViewSet):
         )
         result = {"period_label": period_label, "by": by, "customers": customer_list}
         return Response(TopCustomersSerializer(result).data)
-
 
     @action(detail=False, methods=["get"], url_path="overdue-customers")
     def overdue_customers(self, request):
@@ -1496,6 +1487,7 @@ class DashboardViewSet(viewsets.ViewSet):
     # PRIVATE COMPUTATION HELPERS
 
     _BUCKET_DEFS = [
+        ("0-6 days", 0, 6),  # ← new
         ("7-15 days", 7, 14),
         ("15-30 days", 15, 29),
         ("30-60 days", 30, 59),
@@ -1509,20 +1501,18 @@ class DashboardViewSet(viewsets.ViewSet):
         Uses customer.days_since_last_payment property directly.
         Falls back to days since first sale if no payment exists.
         """
-        days = customer.days_since_last_payment  # defined on Customer model
+        days = customer.days_since_last_payment
         if days is not None:
             return days
+
         # No payment ever recorded — measure from first sale
         first_sale = customer.sales.order_by("date").first()
         if first_sale and first_sale.date:
             return (today - first_sale.date).days
+
         return None
 
-
     def _compute_overdue_buckets(self) -> list:
-        """
-        Group customers with positive balances into overdue time buckets.
-        """
         today = datetime.date.today()
         customers = Customer.objects.filter(is_active=True).prefetch_related(
             "income_records", "sales"
@@ -1544,25 +1534,22 @@ class DashboardViewSet(viewsets.ViewSet):
                 continue
 
             days = self._days_overdue(c, today)
-            if days is None or days < 7:
-                continue
+            if days is None:
+                days = 0  # treat as newest if we have no date at all
 
             for label, min_d, max_d in self._BUCKET_DEFS:
                 if min_d <= days <= max_d:
                     buckets[label]["count"] += 1
                     buckets[label]["total_amount"] += bal
-                    buckets[label]["customers"].append(
-                        {
-                            "id": c.id,
-                            "name": c.name,
-                            "amount": bal,  # keep as Decimal
-                            "days": days,
-                        }
-                    )
+                    buckets[label]["customers"].append({
+                        "id": c.id,
+                        "name": c.name,
+                        "amount": bal,
+                        "days": days,
+                    })
                     break
 
         return list(buckets.values())
-
 
     def _compute_overdue_flat(self) -> list:
         today = datetime.date.today()
@@ -1570,41 +1557,39 @@ class DashboardViewSet(viewsets.ViewSet):
             "income_records", "sales"
         )
 
-        overdue = []
+        result = []
         for c in customers:
             bal = c.current_balance
             if bal <= 0:
                 continue
 
             days = self._days_overdue(c, today)
-            if days is None or days < 7:
-                continue
+            if days is None:
+                days = 0
 
-            # Assign bucket using the same definitions
-            bucket_label = "60+ days"
+            # Find matching bucket label
+            bucket_label = "0-6 days"
             for label, min_d, max_d in self._BUCKET_DEFS:
                 if min_d <= days <= max_d:
                     bucket_label = label
                     break
 
-            overdue.append(
-                {
-                    "id": c.id,
-                    "name": c.name,
-                    "phone": c.phone,
-                    "location": c.location,
-                    "current_balance": bal,
-                    "total_sales_amount": c.total_sales_amount,
-                    "total_paid": c.total_payments_received,
-                    "last_payment_date": c.last_payment_date,
-                    "last_purchase_date": c.last_purchase_date,
-                    "days_since_last_payment": days,
-                    "bucket": bucket_label,
-                }
-            )
+            result.append({
+                "id": c.id,
+                "name": c.name,
+                "phone": c.phone,
+                "location": c.location,
+                "current_balance": bal,
+                "total_sales_amount": c.total_sales_amount,
+                "total_paid": c.total_payments_received,
+                "last_payment_date": c.last_payment_date,
+                "last_purchase_date": c.last_purchase_date,
+                "days_since_last_payment": days,
+                "bucket": bucket_label,
+            })
 
-        overdue.sort(key=lambda x: x["days_since_last_payment"] or 0, reverse=True)
-        return overdue
+        result.sort(key=lambda x: x["days_since_last_payment"] or 0, reverse=True)
+        return result
 
 
     def _compute_recent_transactions(self, limit: int = 10) -> list:
