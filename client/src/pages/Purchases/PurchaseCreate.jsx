@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card, Button } from '../../components/common/index.js';
 import { FormField, Input, Select, TextArea, AsyncSelect } from '../../components/common/Form/index.jsx';
 import { factoryService } from '../../services/factoryService.js';
-import { useCreatePurchase } from '../../services/purchaseService.js';
+import { useCreatePurchase, purchaseService } from '../../services/purchaseService.js';
 import { showToast } from '../../utils/toast.js';
 import { handleBackendErrors } from '../../utils/errorHandler.js';
 
@@ -14,6 +14,7 @@ export default function PurchaseCreate() {
     factory: null,
     date: new Date().toISOString().split('T')[0],
     currency: 'ETB',
+    payment_method: null,
     amount_paid_now: '',
     notes: '',
     items: [
@@ -43,6 +44,13 @@ export default function PurchaseCreate() {
     setFormData(prev => ({ ...prev, factory: factoryId }));
     if (errors.factory) {
       setErrors(prev => ({ ...prev, factory: null }));
+    }
+  };
+
+  const handlePaymentMethodChange = (methodId) => {
+    setFormData(prev => ({ ...prev, payment_method: methodId }));
+    if (errors.payment_method) {
+      setErrors(prev => ({ ...prev, payment_method: null }));
     }
   };
 
@@ -120,6 +128,7 @@ export default function PurchaseCreate() {
     const payload = {
       ...formData,
       amount_paid_now: formData.amount_paid_now ? parseFloat(formData.amount_paid_now) : 0,
+      payment_method: formData.payment_method || null,
       items: formData.items.map(item => ({
         ...item,
         purchase_price: parseFloat(item.purchase_price),
@@ -162,6 +171,16 @@ export default function PurchaseCreate() {
 
   const loadFactoryOptions = async (search) => {
     return await factoryService.getFactoryOptions(search);
+  };
+
+  const loadPaymentMethodOptions = async (search) => {
+    try {
+      const res = await purchaseService.getPaymentMethodOptions(search);
+      return Array.isArray(res) ? res : (res.results || []);
+    } catch (e) {
+      console.error(e);
+      return [];
+    }
   };
 
   return (
@@ -207,7 +226,7 @@ export default function PurchaseCreate() {
                   </FormField>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 150px), 1fr))', gap: '20px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))', gap: '20px' }}>
                   <FormField label="Currency" required error={errors.currency}>
                     <Select 
                       name="currency"
@@ -220,6 +239,18 @@ export default function PurchaseCreate() {
                     />
                   </FormField>
 
+                  <FormField label="Payment Method" error={errors.payment_method}>
+                    <AsyncSelect
+                      loadOptions={loadPaymentMethodOptions}
+                      value={formData.payment_method}
+                      onChange={handlePaymentMethodChange}
+                      placeholder="Search payment method..."
+                      error={errors.payment_method}
+                    />
+                  </FormField>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))', gap: '20px' }}>
                   <FormField label="Amount Paid Now" error={errors.amount_paid_now}>
                     <Input 
                       type="number"

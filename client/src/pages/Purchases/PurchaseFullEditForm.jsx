@@ -13,6 +13,7 @@ export default function PurchaseFullEditForm({ initialData, onSuccess, onCancel 
     factory: initialData?.factory || '',
     date: initialData?.date ? initialData.date.substring(0, 10) : '',
     currency: initialData?.currency || 'ETB',
+    payment_method: initialData?.payment_method || '',
     amount_paid_now: initialData?.amount_paid_now || '',
     notes: initialData?.notes || ''
   });
@@ -20,6 +21,16 @@ export default function PurchaseFullEditForm({ initialData, onSuccess, onCancel 
   const loadFactoryOptions = async (search) => {
     const res = await purchaseService.getFactoryOptions(search);
     return res;
+  };
+
+  const loadPaymentMethodOptions = async (search) => {
+    try {
+      const res = await purchaseService.getPaymentMethodOptions(search);
+      return Array.isArray(res) ? res : (res.results || []);
+    } catch (e) {
+      console.error(e);
+      return [];
+    }
   };
 
   const handleChange = (field, value) => {
@@ -35,7 +46,8 @@ export default function PurchaseFullEditForm({ initialData, onSuccess, onCancel 
 
     const payload = {
       ...formData,
-      amount_paid_now: formData.amount_paid_now === '' ? 0 : parseFloat(formData.amount_paid_now)
+      amount_paid_now: formData.amount_paid_now === '' ? 0 : parseFloat(formData.amount_paid_now),
+      payment_method: formData.payment_method || null
     };
 
     const toastId = showToast.loading('Updating purchase...');
@@ -95,16 +107,27 @@ export default function PurchaseFullEditForm({ initialData, onSuccess, onCancel 
         </FormField>
       </div>
 
-      <FormField label="Amount Paid Now" error={errors.amount_paid_now}>
-        <Input
-          type="number"
-          step="0.01"
-          placeholder="0.00"
-          value={formData.amount_paid_now}
-          onChange={(e) => handleChange('amount_paid_now', e.target.value)}
-          error={errors.amount_paid_now}
-        />
-      </FormField>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+        <FormField label="Payment Method" error={errors.payment_method}>
+          <AsyncSelect
+            loadOptions={loadPaymentMethodOptions}
+            value={formData.payment_method}
+            onChange={(val) => handleChange('payment_method', val)}
+            placeholder="Search payment method..."
+          />
+        </FormField>
+
+        <FormField label="Amount Paid Now" error={errors.amount_paid_now}>
+          <Input
+            type="number"
+            step="0.01"
+            placeholder="0.00"
+            value={formData.amount_paid_now}
+            onChange={(e) => handleChange('amount_paid_now', e.target.value)}
+            error={errors.amount_paid_now}
+          />
+        </FormField>
+      </div>
 
       <FormField label="Notes" error={errors.notes}>
         <TextArea

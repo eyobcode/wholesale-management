@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { usePurchase, usePurchaseItems, useDeletePurchaseItem, useDeletePurchase } from '../../services/purchaseService.js';
+import { usePaymentMethods } from '../../services/paymentService.js';
 import { Card, Badge, Button, DataTable, Modal, ConfirmationDialog, KeyValueGrid, StatCard } from '../../components/common/index.js';
 import { showToast } from '../../utils/toast.js';
 import { handleBackendErrors } from '../../utils/errorHandler.js';
@@ -14,6 +15,7 @@ export default function PurchaseDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: purchase, isLoading, isError, error } = usePurchase(id);
+  const { data: paymentMethods } = usePaymentMethods();
   const deleteItemMutation = useDeletePurchaseItem();
   const deletePurchaseMutation = useDeletePurchase();
 
@@ -93,29 +95,39 @@ export default function PurchaseDetails() {
     return new Date(dateString).toLocaleString();
   };
 
+  const getPaymentMethodLabel = () => {
+    if (!purchase.payment_method) return '-';
+    if (!paymentMethods) return purchase.payment_method;
+
+    const methodsArray = Array.isArray(paymentMethods) ? paymentMethods : (paymentMethods.results || []);
+    const methodObj = methodsArray.find(m => m.value === purchase.payment_method);
+
+    return methodObj ? methodObj.label : purchase.payment_method;
+  };
+
   const itemColumns = [
     { key: 'product_name', title: 'Product Name', sortable: false },
     { key: 'item_code', title: 'Item Code', sortable: false },
     { key: 'total_bags_purchased', title: 'Bags Purchased', sortable: false },
     { key: 'pcs_per_bag', title: 'Pieces per Bag', sortable: false },
     { key: 'total_pieces_purchased', title: 'Total Pieces', sortable: false },
-    { 
-      key: 'purchase_price', 
-      title: 'Purchase Price', 
-      render: (val, row) => formatCurrency(val, row.currency || purchase.currency) 
+    {
+      key: 'purchase_price',
+      title: 'Purchase Price',
+      render: (val, row) => formatCurrency(val, row.currency || purchase.currency)
     },
-    { 
-      key: 'price_type', 
-      title: 'Price Type', 
+    {
+      key: 'price_type',
+      title: 'Price Type',
       render: (val) => {
         if (val === 'per_piece') return <Badge variant="info">Per Piece</Badge>;
         if (val === 'per_bag') return <Badge variant="primary">Per Bag</Badge>;
         return <Badge variant="default">{val}</Badge>;
       }
     },
-    { 
-      key: 'total_item_amount', 
-      title: 'Total Amount', 
+    {
+      key: 'total_item_amount',
+      title: 'Total Amount',
       render: (val, row) => <span style={{ fontWeight: 600 }}>{formatCurrency(val, row.currency || purchase.currency)}</span>
     }
   ];
@@ -204,10 +216,10 @@ export default function PurchaseDetails() {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px' }}>
               <h1 className="page-title">Purchase #{purchase.id}</h1>
-              <Badge 
+              <Badge
                 status={
-                  purchase.payment_status === 'paid' ? 'success' : 
-                  purchase.payment_status === 'partial' ? 'warning' : 'danger'
+                  purchase.payment_status === 'paid' ? 'success' :
+                    purchase.payment_status === 'partial' ? 'warning' : 'danger'
                 }
               >
                 {purchase.payment_status?.toUpperCase() || 'UNKNOWN'}
@@ -218,7 +230,7 @@ export default function PurchaseDetails() {
             </p>
           </div>
         </div>
-        
+
         <div className="details-header-actions">
           <Button variant="outline" leftIcon="ri-file-list-3-line" onClick={() => setIsInvoiceModalOpen(true)}>
             View Invoice
@@ -241,32 +253,32 @@ export default function PurchaseDetails() {
           <i className="ri-dashboard-3-line" style={{ fontSize: '1.25rem', color: 'var(--text-muted)' }}></i>
           <h3 style={{ fontSize: '1.1rem', fontWeight: 600, margin: 0 }}>Metrics & Status</h3>
         </div>
-        
+
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
-          <StatCard 
-            label="Total Amount" 
-            value={formatCurrency(purchase.total_purchase_amount, purchase.currency)} 
+          <StatCard
+            label="Total Amount"
+            value={formatCurrency(purchase.total_purchase_amount, purchase.currency)}
             icon="ri-bank-card-line"
           />
-          <StatCard 
-            label="Amount Paid" 
-            value={formatCurrency(purchase.amount_paid_now, purchase.currency)} 
+          <StatCard
+            label="Amount Paid"
+            value={formatCurrency(purchase.amount_paid_now, purchase.currency)}
             icon="ri-checkbox-circle-line"
             valueColor="var(--success-color, #10b981)"
             iconColor="var(--success-color, #10b981)"
             iconBg="rgba(16, 185, 129, 0.15)"
           />
-          <StatCard 
-            label="Unpaid Amount" 
-            value={formatCurrency(purchase.unpaid_amount, purchase.currency)} 
+          <StatCard
+            label="Unpaid Amount"
+            value={formatCurrency(purchase.unpaid_amount, purchase.currency)}
             icon="ri-error-warning-line"
             valueColor="var(--danger-color, #ef4444)"
             iconColor="var(--danger-color, #ef4444)"
             iconBg="rgba(239, 68, 68, 0.15)"
           />
-          <StatCard 
-            label="Editability" 
-            value={purchase.is_fully_editable ? 'Fully Editable' : 'Partially Editable'} 
+          <StatCard
+            label="Editability"
+            value={purchase.is_fully_editable ? 'Fully Editable' : 'Partially Editable'}
             icon={purchase.is_fully_editable ? "ri-check-line" : "ri-error-warning-line"}
             valueColor={purchase.is_fully_editable ? 'var(--success-color, #10b981)' : 'var(--warning-color, #f59e0b)'}
             iconColor={purchase.is_fully_editable ? 'var(--success-color, #10b981)' : 'var(--warning-color, #f59e0b)'}
@@ -280,12 +292,13 @@ export default function PurchaseDetails() {
         <Card>
           <Card.Header title="Purchase Information" icon="ri-information-line" />
           <Card.Body>
-            
+
             {/* Clean Dashboard Layout */}
             <KeyValueGrid items={[
               { label: 'Factory', value: purchase.factory_name },
               { label: 'Purchase Date', value: formatDate(purchase.date) },
               { label: 'Shipping Code', value: purchase.shipping_code || '-' },
+              { label: 'Payment Method', value: getPaymentMethodLabel() },
               { label: 'Currency', value: purchase.currency || 'ETB' },
               { label: 'Created At', value: formatDateTime(purchase.created_at) },
               { label: 'Updated At', value: formatDateTime(purchase.updated_at) },
@@ -297,11 +310,11 @@ export default function PurchaseDetails() {
                 <h4 style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <i className="ri-sticky-note-line"></i> Notes
                 </h4>
-                <div style={{ 
-                  backgroundColor: 'rgba(14, 165, 233, 0.1)', 
-                  border: '1px solid rgba(14, 165, 233, 0.2)', 
+                <div style={{
+                  backgroundColor: 'rgba(14, 165, 233, 0.1)',
+                  border: '1px solid rgba(14, 165, 233, 0.2)',
                   borderLeft: '4px solid #0ea5e9',
-                  padding: '16px 20px', 
+                  padding: '16px 20px',
                   borderRadius: '6px',
                   color: 'var(--text-color)',
                   fontSize: '0.95rem',
@@ -322,14 +335,14 @@ export default function PurchaseDetails() {
         <Card>
           <Card.Header title="Purchase Items" icon="ri-shopping-cart-2-line" />
           <Card.Body style={{ padding: 0 }}>
-            <DataTable 
+            <DataTable
               columns={itemColumns}
               data={itemsData?.results || []}
               rowActions={itemActions}
               keyField="id"
               emptyMessage="No items found for this purchase."
               isLoading={itemsLoading}
-              
+
               searchPlaceholder="Search items..."
               searchValue={itemsSearch}
               onSearch={handleItemsSearch}
@@ -357,14 +370,14 @@ export default function PurchaseDetails() {
       </div>
 
       {/* Item Details Modal */}
-      <Modal 
-        isOpen={!!selectedItem} 
-        onClose={() => setSelectedItem(null)} 
+      <Modal
+        isOpen={!!selectedItem}
+        onClose={() => setSelectedItem(null)}
         title="Purchase Item Details"
       >
         {selectedItem && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            
+
             <Card>
               <Card.Header title="Basic Information" icon="ri-information-line" />
               <Card.Body>
@@ -396,9 +409,9 @@ export default function PurchaseDetails() {
                   <div className="info-item">
                     <span className="info-label">Price Type</span>
                     <span className="info-value">
-                      {selectedItem.price_type === 'per_piece' ? <Badge variant="info">Per Piece</Badge> : 
-                       selectedItem.price_type === 'per_bag' ? <Badge variant="primary">Per Bag</Badge> : 
-                       <Badge variant="default">{selectedItem.price_type}</Badge>}
+                      {selectedItem.price_type === 'per_piece' ? <Badge variant="info">Per Piece</Badge> :
+                        selectedItem.price_type === 'per_bag' ? <Badge variant="primary">Per Bag</Badge> :
+                          <Badge variant="default">{selectedItem.price_type}</Badge>}
                     </span>
                   </div>
                   <div className="info-item">
@@ -478,57 +491,57 @@ export default function PurchaseDetails() {
                 </div>
               </Card.Body>
             </Card>
-            
+
           </div>
         )}
       </Modal>
 
       {/* Edit Item Modal */}
-      <Modal 
-        isOpen={!!editingItem} 
-        onClose={() => setEditingItem(null)} 
+      <Modal
+        isOpen={!!editingItem}
+        onClose={() => setEditingItem(null)}
         title="Edit Purchase Item"
       >
         {editingItem && (
-          <PurchaseItemForm 
-            item={editingItem} 
-            purchaseId={id} 
-            onClose={() => setEditingItem(null)} 
+          <PurchaseItemForm
+            item={editingItem}
+            purchaseId={id}
+            onClose={() => setEditingItem(null)}
           />
         )}
       </Modal>
 
       {/* Edit Purchase Modal */}
-      <Modal 
-        isOpen={isEditModalOpen} 
-        onClose={() => setIsEditModalOpen(false)} 
+      <Modal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
         title={purchase.is_fully_editable ? "Edit Purchase" : "Edit Payment"}
       >
         {isEditModalOpen && purchase.is_fully_editable ? (
-          <PurchaseFullEditForm 
-            initialData={purchase} 
-            onSuccess={() => setIsEditModalOpen(false)} 
-            onCancel={() => setIsEditModalOpen(false)} 
+          <PurchaseFullEditForm
+            initialData={purchase}
+            onSuccess={() => setIsEditModalOpen(false)}
+            onCancel={() => setIsEditModalOpen(false)}
           />
         ) : isEditModalOpen && (
-          <PurchaseEditForm 
-            initialData={purchase} 
-            onSuccess={() => setIsEditModalOpen(false)} 
-            onCancel={() => setIsEditModalOpen(false)} 
+          <PurchaseEditForm
+            initialData={purchase}
+            onSuccess={() => setIsEditModalOpen(false)}
+            onCancel={() => setIsEditModalOpen(false)}
           />
         )}
       </Modal>
 
       {/* Add Item Modal */}
-      <Modal 
-        isOpen={isAddItemModalOpen} 
-        onClose={() => setIsAddItemModalOpen(false)} 
+      <Modal
+        isOpen={isAddItemModalOpen}
+        onClose={() => setIsAddItemModalOpen(false)}
         title="Add Purchase Item"
       >
         {isAddItemModalOpen && (
-          <PurchaseItemAddForm 
-            purchaseId={id} 
-            onClose={() => setIsAddItemModalOpen(false)} 
+          <PurchaseItemAddForm
+            purchaseId={id}
+            onClose={() => setIsAddItemModalOpen(false)}
           />
         )}
       </Modal>
