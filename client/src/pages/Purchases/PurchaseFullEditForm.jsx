@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { FormField, Input, TextArea, Button } from '../../components/common/index.js';
 import { AsyncSelect } from '../../components/common/Form/AsyncSelect.jsx';
-import { useReplacePurchase, purchaseService } from '../../services/purchaseService.js';
+import { purchaseService } from '../../services/purchaseService.js';
+import { useReplacePurchase } from '../../hooks/usePurchases.js';
 import { showToast } from '../../utils/toast.js';
 import { handleBackendErrors } from '../../utils/errorHandler.js';
 

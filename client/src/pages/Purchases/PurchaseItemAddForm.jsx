@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Input, Select, Button, FormField } from '../../components/common/index.js';
-import { useCreatePurchaseItem } from '../../services/purchaseService.js';
+import { useCreatePurchaseItem } from '../../hooks/usePurchases.js';
 import { showToast } from '../../utils/toast.js';
 import { handleBackendErrors } from '../../utils/errorHandler.js';
 

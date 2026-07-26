@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePurchases, useDeletePurchase, purchaseService } from '../../services/purchaseService.js';
+import { usePurchases, useDeletePurchase } from '../../hooks/usePurchases.js';
+import { purchaseService } from '../../services/purchaseService.js';
 import { DataTable, Badge, Button, Modal } from '../../components/common/index.js';
 import PurchaseEditForm from './PurchaseEditForm.jsx';
 import { showToast } from '../../utils/toast.js';

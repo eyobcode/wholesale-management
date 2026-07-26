@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { usePurchase, usePurchaseItems, useDeletePurchaseItem, useDeletePurchase } from '../../services/purchaseService.js';
+import { usePurchase, usePurchaseItems, useDeletePurchaseItem, useDeletePurchase } from '../../hooks/usePurchases.js';
 import { usePaymentMethods } from '../../services/paymentService.js';
 import { Card, Badge, Button, DataTable, Modal, ConfirmationDialog, KeyValueGrid, StatCard } from '../../components/common/index.js';
 import { showToast } from '../../utils/toast.js';
