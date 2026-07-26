@@ -64,7 +64,7 @@ class Customer(TimeStampedModel):
     def current_balance(self):
         return (
                 self.initial_credit
-                + self.total_sale_credit_amount
+                + self.total_sales_amount
                 - self.total_payments_received
         )
 
