@@ -45,6 +45,11 @@ export const purchaseService = {
   async getFactoryOptions(search = '') {
     const res = await api.get('/factory-options/', { params: search ? { search } : {} });
     return res;
+  },
+
+  async getPaymentMethodOptions(search = '') {
+    const res = await api.get('/payment-method-options/', { params: search ? { search } : {} });
+    return res;
   }
 };
 
