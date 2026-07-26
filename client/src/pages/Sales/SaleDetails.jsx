@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSale, useSaleItems, useDeleteSaleItem, useDeleteSale } from '../../hooks/useSales.js';
+import { usePaymentMethods } from '../../services/paymentService.js';
 import { Card, Badge, Button, DataTable, Modal, ConfirmationDialog, KeyValueGrid, StatCard } from '../../components/common/index.js';
 import { showToast } from '../../utils/toast.js';
 import { handleBackendErrors } from '../../utils/errorHandler.js';
@@ -13,6 +14,7 @@ export default function SaleDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: sale, isLoading, isError, error } = useSale(id);
+  const { data: paymentMethods } = usePaymentMethods();
   const deleteItemMutation = useDeleteSaleItem();
   const deleteSaleMutation = useDeleteSale();
 
@@ -113,12 +115,12 @@ export default function SaleDetails() {
   // Payment method display
   const getPaymentMethodLabel = () => {
     if (!sale.payment_method) return '-';
-    const map = {
-      cash: 'Cash', cbe: 'CBE', telebirr: 'Telebirr',
-      cbe_birr: 'CBE Birr', abyssinia: 'Abyssinia', awash: 'Awash',
-      other: 'Other'
-    };
-    return map[sale.payment_method] || sale.payment_method;
+    if (!paymentMethods) return sale.payment_method; // fallback while loading
+    
+    const methodsArray = Array.isArray(paymentMethods) ? paymentMethods : (paymentMethods.results || []);
+    const methodObj = methodsArray.find(m => m.value === sale.payment_method);
+    
+    return methodObj ? methodObj.label : sale.payment_method;
   };
 
   // Item table columns
