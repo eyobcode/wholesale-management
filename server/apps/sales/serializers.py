@@ -260,17 +260,6 @@ class SaleReadSerializer(serializers.ModelSerializer):
     def get_total_profit(self, obj):
         return sum(item.profit for item in obj.items.all())
 
-    # def get_payment_status(self, obj):
-    #     if obj.payment_type == Sale.PaymentType.CASH:
-    #         return "Fully Paid"
-    #     elif obj.payment_type == Sale.PaymentType.CREDIT:
-    #         return f"Unpaid — owes {obj.credit_amount} {obj.currency}"
-    #     else:
-    #         return (
-    #             f"Partial — paid {obj.amount_paid_now}, "
-    #             f"owes {obj.credit_amount} {obj.currency}"
-    #         )
-
 
 class SaleCreateSerializer(serializers.ModelSerializer):
     items = SaleItemWriteSerializer(many=True, write_only=True)
@@ -278,9 +267,17 @@ class SaleCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sale
         fields = [
-            'id', 'customer', 'date', 'currency', 'amount_paid_now',
-            'payment_method', 'notes', 'items',
-            'invoice_number', 'total_sale_amount', 'credit_amount', 'payment_type',
+            'id',
+            'customer',
+            'date',
+            'currency',
+            'amount_paid_now',
+            'payment_method',
+            'notes', 'items',
+            'invoice_number',
+            'total_sale_amount',
+            'credit_amount',
+            'payment_type',
         ]
         read_only_fields = [
             'invoice_number', 'total_sale_amount', 'credit_amount', 'payment_type',
