@@ -194,8 +194,8 @@ export default function CustomerInsightsTab() {
                         data={pieData}
                         cx="50%"
                         cy="50%"
-                        innerRadius={60}
-                        outerRadius={100}
+                        innerRadius={50}
+                        outerRadius={120}
                         paddingAngle={4}
                         dataKey="value"
                         stroke="none"
