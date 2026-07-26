@@ -317,9 +317,9 @@ class SaleCreateSerializer(serializers.ModelSerializer):
         # Force payment_method when there is payment
         if amount_paid_now > 0:
             if not payment_method:
-                raise serializers.ValidationError({
-                    "payment_method": "Payment method is required when amount_paid_now > 0."
-                })
+                raise serializers.ValidationError(
+                     "Payment method is required when 'Amount Paid Now' > 0."
+                )
         else:
             data['payment_method'] = None
 
