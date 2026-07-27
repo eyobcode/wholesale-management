@@ -12,7 +12,7 @@ export default function Factories() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [activeSort, setActiveSort] = useState('name');
-  
+
   // Modal state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [paymentFactory, setPaymentFactory] = useState(null);
@@ -39,21 +39,21 @@ export default function Factories() {
     { key: 'name', title: 'Name', sortable: true },
     { key: 'phone', title: 'Phone' },
     { key: 'location', title: 'Location' },
-    { 
-      key: 'current_balance', 
+    {
+      key: 'current_balance',
       title: 'Balance Status',
       render: (_, row) => {
         const balance = parseFloat(row.current_balance || 0);
         const currency = row.initial_balance_currency || 'ETB';
-        
+
         // Positive means we owe them (Danger). Negative means they owe us (Success).
         if (balance > 0) return <Badge variant="danger">You Owe {formatCurrency(balance, currency)}</Badge>;
         if (balance < 0) return <Badge variant="success">They Owe {formatCurrency(Math.abs(balance), currency)}</Badge>;
         return <Badge variant="default">Settled</Badge>;
       }
     },
-    { 
-      key: 'is_active', 
+    {
+      key: 'is_active',
       title: 'Status',
       render: (val) => {
         const isActive = val === true || val === 'true';
@@ -133,7 +133,7 @@ export default function Factories() {
   const totalPages = data?.total_pages || 1;
 
   return (
-    <div className="middle-class">
+    <div className="page-container">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <div>
           <h1 className="page-title">Factories</h1>
@@ -141,30 +141,30 @@ export default function Factories() {
         </div>
       </div>
 
-      <DataTable 
+      <DataTable
         columns={columns}
         data={data?.results || []}
         isLoading={isLoading}
-        
+
         searchPlaceholder="Search by name, phone..."
         searchValue={search}
         onSearch={handleSearch}
-        
+
         filters={filterConfig}
         onFilterChange={handleFilterChange}
-        
+
         sortOptions={sortConfig}
         activeSort={activeSort}
         onSortChange={handleSortChange}
-        
+
         toolbarActions={
           <Button variant="primary" leftIcon="ri-add-line" onClick={handleNewFactory}>
             New Factory
           </Button>
         }
-        
+
         rowActions={rowActions}
-        
+
         pagination={{
           currentPage: page,
           totalPages: totalPages,

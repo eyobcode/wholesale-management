@@ -16,7 +16,7 @@ export default function Purchases() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [activeSort, setActiveSort] = useState('-date');
-  
+
   // Modal states
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingPurchase, setEditingPurchase] = useState(null);
@@ -227,7 +227,7 @@ export default function Purchases() {
   const totalPages = data?.total_pages || 1;
 
   return (
-    <div className="middle-class">
+    <div className="page-container">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <div>
           <h1 className="page-title">Purchases</h1>

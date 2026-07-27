@@ -17,7 +17,7 @@ export default function Payments() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState('income'); // 'income' or 'factory'
-  
+
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedIncome, setSelectedIncome] = useState(null);
@@ -27,7 +27,7 @@ export default function Payments() {
   // Factory payments state
   const [isFactoryDeleteDialogOpen, setIsFactoryDeleteDialogOpen] = useState(false);
   const [factoryPaymentToDelete, setFactoryPaymentToDelete] = useState(null);
-  
+
   const [isFactoryEditModalOpen, setIsFactoryEditModalOpen] = useState(false);
   const [factoryPaymentToEdit, setFactoryPaymentToEdit] = useState(null);
 
@@ -151,27 +151,27 @@ export default function Payments() {
   const incomeColumns = [
     { key: 'receipt_number', title: 'Receipt Number', sortable: true },
     { key: 'customer_name', title: 'Customer', sortable: false },
-    { 
-      key: 'sale_invoice', 
-      title: 'Sale Invoice', 
+    {
+      key: 'sale_invoice',
+      title: 'Sale Invoice',
       sortable: false,
       render: (val) => val ? val : '-'
     },
-    { 
-      key: 'date', 
-      title: 'Payment Date', 
+    {
+      key: 'date',
+      title: 'Payment Date',
       sortable: true,
       render: (val) => val ? new Date(val).toLocaleDateString() : '-'
     },
-    { 
-      key: 'paid_amount', 
-      title: 'Paid Amount', 
+    {
+      key: 'paid_amount',
+      title: 'Paid Amount',
       sortable: true,
       render: (_, row) => formatCurrency(row.paid_amount, row.currency)
     },
-    { 
-      key: 'payment_method', 
-      title: 'Payment Method', 
+    {
+      key: 'payment_method',
+      title: 'Payment Method',
       sortable: false,
       render: (val) => formatPaymentMethod(val)
     }
@@ -302,25 +302,25 @@ export default function Payments() {
         data={incomeData?.results || []}
         isLoading={isIncomeLoading}
         keyField="id"
-        
+
         searchPlaceholder="Search receipt, customer, notes..."
         searchValue={search}
         onSearch={(v) => updateURLParams({ search: v, page: 1 })}
-        
+
         filters={incomeFilterConfig}
         onFilterChange={handleFilterChange}
-        
+
         sortOptions={incomeSortConfig}
         activeSort={activeSort}
         onSortChange={(val) => updateURLParams({ ordering: val, page: 1 })}
-        
+
         rowActions={incomeRowActions}
         toolbarActions={
           <Button variant="primary" leftIcon="ri-add-line" onClick={() => setIsCreateModalOpen(true)}>
             Record Payment
           </Button>
         }
-        
+
         pagination={{
           currentPage: page,
           totalPages: incomeData?.total_pages || 1,
@@ -535,7 +535,7 @@ export default function Payments() {
       <div className="page-header" style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h1 className="page-title">Payments</h1>
-          <p className="page-description">Manage incoming customer payments and outgoing factory payments.</p>
+          <p style={{ color: 'var(--text-muted)' }}>Manage incoming customer payments and outgoing factory payments.</p>
         </div>
         <div className="page-actions">
           {/* Add buttons here if needed */}
@@ -544,7 +544,7 @@ export default function Payments() {
 
       {/* Segmented Switch */}
       <div className="segmented-control" style={{ marginBottom: '24px' }}>
-        <button 
+        <button
           className={`segmented-tab ${activeTab === 'income' ? 'active' : ''}`}
           onClick={() => {
             setActiveTab('income');
@@ -554,7 +554,7 @@ export default function Payments() {
           <i className="ri-wallet-3-line" style={{ marginRight: '8px' }}></i>
           Customer Income
         </button>
-        <button 
+        <button
           className={`segmented-tab ${activeTab === 'factory' ? 'active' : ''}`}
           onClick={() => {
             setActiveTab('factory');
@@ -568,7 +568,7 @@ export default function Payments() {
 
       {activeTab === 'income' ? renderIncomeTable() : renderFactoryPaymentsTable()}
 
-      <IncomeEditModal 
+      <IncomeEditModal
         isOpen={isEditModalOpen}
         onClose={() => {
           setIsEditModalOpen(false);
@@ -577,7 +577,7 @@ export default function Payments() {
         income={selectedIncome}
       />
 
-      <IncomeCreateModal 
+      <IncomeCreateModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
       />

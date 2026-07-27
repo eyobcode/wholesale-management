@@ -139,10 +139,10 @@ export default function Customers() {
   const totalPages = data?.total_pages || 1;
 
   return (
-    <div className="middle-class">
+    <div className="page-container">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <div>
-          <h1 className="page-title" style={{ fontSize: '1.8rem', marginBottom: '8px' }}>Customers</h1>
+          <h1 className="page-title" >Customers</h1>
           <p style={{ color: 'var(--text-muted)' }}>Manage your wholesale clients and view their balances.</p>
         </div>
       </div>

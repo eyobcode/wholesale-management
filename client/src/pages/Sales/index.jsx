@@ -219,7 +219,7 @@ export default function Sales() {
     <div className="page-container">
       <div className="page-header" style={{ marginBottom: '24px' }}>
         <h1 className="page-title">Sales</h1>
-        <p className="page-description">Manage customer sales, invoices, and payments.</p>
+        <p style={{ color: 'var(--text-muted)' }}>Manage customer sales, invoices, and payments.</p>
       </div>
 
       <Card>
@@ -233,7 +233,7 @@ export default function Sales() {
           searchPlaceholder="Search invoices or customers..."
           searchValue={search}
           onSearch={(v) => updateURLParams({ search: v, page: 1 })}
-          
+
           // Filter props
           filters={filterConfig}
           onFilterChange={handleFilterChange}

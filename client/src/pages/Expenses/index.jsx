@@ -102,9 +102,9 @@ export default function Expenses() {
   // DataTable Configuration
   const columns = [
     { key: 'expense_number', title: 'Expense Number', sortable: true },
-    { 
-      key: 'date', 
-      title: 'Date', 
+    {
+      key: 'date',
+      title: 'Date',
       sortable: true,
       render: (val) => val ? new Date(val).toLocaleDateString() : '-'
     },
@@ -233,7 +233,7 @@ export default function Expenses() {
     <div className="page-container">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <div>
-          <h1 className="page-title" style={{ fontSize: '1.8rem', marginBottom: '8px' }}>Expenses</h1>
+          <h1 className="page-title" >Expenses</h1>
           <p style={{ color: 'var(--text-muted)' }}>Manage and track your business expenses.</p>
         </div>
       </div>
@@ -305,7 +305,7 @@ export default function Expenses() {
           }
         }}
       />
-      
+
       {/* Edit Modal */}
       <ExpenseEditModal
         isOpen={isEditModalOpen}

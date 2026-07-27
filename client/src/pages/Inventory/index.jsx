@@ -62,15 +62,15 @@ export default function Inventory() {
     { key: 'item_code', title: 'Item Code', sortable: true },
     { key: 'factory_name', title: 'Factory', sortable: false },
     { key: 'shipping_code', title: 'Shipping Code', sortable: true },
-    { 
-      key: 'remaining_stock', 
-      title: 'Remaining Stock', 
+    {
+      key: 'remaining_stock',
+      title: 'Remaining Stock',
       sortable: false,
       render: (_, row) => formatRemainingStock(row)
     },
-    { 
-      key: 'stock_value', 
-      title: 'Stock Value', 
+    {
+      key: 'stock_value',
+      title: 'Stock Value',
       sortable: true,
       render: (val) => formatCurrency(val)
     }
@@ -202,11 +202,11 @@ export default function Inventory() {
       <div className="page-header" style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h1 className="page-title">Inventory</h1>
-          <p className="page-description">Manage stock levels, tracking, and valuation.</p>
+          <p style={{ color: 'var(--text-muted)' }}>Manage stock levels, tracking, and valuation.</p>
         </div>
-        <Button 
-          variant="primary" 
-          leftIcon="ri-bar-chart-box-line" 
+        <Button
+          variant="primary"
+          leftIcon="ri-bar-chart-box-line"
           onClick={() => navigate('/inventory-summary')}
         >
           View Summary
@@ -219,20 +219,20 @@ export default function Inventory() {
           data={data?.results || []}
           isLoading={isLoading}
           keyField="id"
-          
+
           searchPlaceholder="Search product, item code, shipping..."
           searchValue={search}
           onSearch={(v) => updateURLParams({ search: v, page: 1 })}
-          
+
           filters={filterConfig}
           onFilterChange={handleFilterChange}
-          
+
           sortOptions={sortConfig}
           activeSort={activeSort}
           onSortChange={(val) => updateURLParams({ ordering: val, page: 1 })}
-          
+
           rowActions={rowActions}
-          
+
           pagination={{
             currentPage: page,
             totalPages: data?.total_pages || 1,
