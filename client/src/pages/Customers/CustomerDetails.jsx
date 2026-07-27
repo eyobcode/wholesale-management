@@ -13,7 +13,7 @@ export default function CustomerDetails() {
   const navigate = useNavigate();
   const { data: customer, isLoading, error } = useCustomer(id);
   const deleteMutation = useDeleteCustomer();
-  
+
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
@@ -44,7 +44,7 @@ export default function CustomerDetails() {
   const renderBalanceBadge = () => {
     const balance = parseFloat(customer.current_balance || 0);
     const currency = customer.initial_credit_currency || 'ETB';
-    
+
     if (balance > 0) return <Badge variant="danger">Owes {formatCurrency(balance, currency)}</Badge>;
     if (balance < 0) return <Badge variant="success">You Owe {formatCurrency(Math.abs(balance), currency)}</Badge>;
     return <Badge variant="default">Settled</Badge>;
@@ -68,7 +68,7 @@ export default function CustomerDetails() {
   };
 
   return (
-    <div className="middle-class details-page-wrapper">
+    <div className="page-container details-page-wrapper">
       {/* Header Area */}
       <div className="details-header">
         <div className="details-header-left">
@@ -85,17 +85,17 @@ export default function CustomerDetails() {
             <p style={{ color: 'var(--text-muted)' }}>Customer ID: #{customer.id}</p>
           </div>
         </div>
-        
+
         <div className="details-header-actions">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             leftIcon="ri-edit-line"
             onClick={() => setIsEditModalOpen(true)}
           >
             Edit
           </Button>
-          <Button 
-            variant="danger" 
+          <Button
+            variant="danger"
             leftIcon="ri-delete-bin-line"
             onClick={handleDelete}
             disabled={deleteMutation.isLoading}
@@ -103,8 +103,8 @@ export default function CustomerDetails() {
           >
             Delete
           </Button>
-          <Button 
-            variant="primary" 
+          <Button
+            variant="primary"
             leftIcon="ri-money-dollar-circle-line"
             onClick={() => setIsPaymentModalOpen(true)}
           >
@@ -115,7 +115,7 @@ export default function CustomerDetails() {
 
       {/* Grid Layout for details */}
       <div className="details-grid">
-        
+
         {/* Basic Information */}
         <Card>
           <Card.Header title="Basic Information" icon="ri-user-line" />
@@ -204,13 +204,13 @@ export default function CustomerDetails() {
         </Card>
 
       </div>
-      
-      <Modal 
-        isOpen={isEditModalOpen} 
-        onClose={() => setIsEditModalOpen(false)} 
+
+      <Modal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
         title="Edit Customer"
       >
-        <CustomerForm 
+        <CustomerForm
           initialData={customer}
           onCancel={() => setIsEditModalOpen(false)}
           onSuccess={() => setIsEditModalOpen(false)}

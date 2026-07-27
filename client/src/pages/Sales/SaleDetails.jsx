@@ -116,10 +116,10 @@ export default function SaleDetails() {
   const getPaymentMethodLabel = () => {
     if (!sale.payment_method) return '-';
     if (!paymentMethods) return sale.payment_method; // fallback while loading
-    
+
     const methodsArray = Array.isArray(paymentMethods) ? paymentMethods : (paymentMethods.results || []);
     const methodObj = methodsArray.find(m => m.value === sale.payment_method);
-    
+
     return methodObj ? methodObj.label : sale.payment_method;
   };
 
@@ -242,7 +242,7 @@ export default function SaleDetails() {
   const profitValue = parseFloat(totalProfit);
 
   return (
-    <div className="page-container">
+    <div className="page-container details-page-wrapper">
       {/* Header Area */}
       <div className="details-header">
         <div className="details-header-left">

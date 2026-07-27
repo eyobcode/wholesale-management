@@ -92,7 +92,7 @@ export default function FactoryPaymentDetails() {
   };
 
   return (
-    <div className="page-container">
+    <div className="page-container details-page-wrapper">
       {/* Header Area */}
       <div className="details-header">
         <div className="details-header-left">
@@ -113,7 +113,7 @@ export default function FactoryPaymentDetails() {
             </p>
           </div>
         </div>
-        
+
         <div className="details-header-actions">
           <Button variant="outline" leftIcon="ri-pencil-line" onClick={() => setIsEditModalOpen(true)}>
             Edit
@@ -125,7 +125,7 @@ export default function FactoryPaymentDetails() {
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        
+
         {/* Factory Information */}
         <Card>
           <Card.Header title="Factory Information" icon="ri-building-2-line" />
@@ -134,9 +134,9 @@ export default function FactoryPaymentDetails() {
               { label: 'Factory Name', value: payment.factory_name },
               { label: 'Payment Number', value: payment.payment_number },
               { label: 'Purchase Shipping Code', value: payment.purchase_shipping_code || '-' },
-              { 
-                label: 'Factory Balance After', 
-                value: <span style={{ fontWeight: 600 }}>{formatCurrency(payment.factory_balance_after, payment.currency)}</span> 
+              {
+                label: 'Factory Balance After',
+                value: <span style={{ fontWeight: 600 }}>{formatCurrency(payment.factory_balance_after, payment.currency)}</span>
               }
             ]} />
           </Card.Body>
@@ -147,20 +147,20 @@ export default function FactoryPaymentDetails() {
           <Card.Header title="Payment Information" icon="ri-money-dollar-circle-line" />
           <Card.Body>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-              <StatCard 
-                title="Paid Amount" 
-                value={formatCurrency(payment.paid_amount, payment.currency)} 
+              <StatCard
+                title="Paid Amount"
+                value={formatCurrency(payment.paid_amount, payment.currency)}
                 icon="ri-wallet-3-line"
                 color="success"
               />
-              <StatCard 
-                title="Payment Method" 
-                value={formatPaymentMethod(payment.payment_method)} 
+              <StatCard
+                title="Payment Method"
+                value={formatPaymentMethod(payment.payment_method)}
                 icon="ri-bank-card-line"
                 color="primary"
               />
             </div>
-            
+
             <KeyValueGrid items={[
               { label: 'Payment Date', value: formatDate(payment.date) },
               { label: 'Currency', value: payment.currency },
@@ -184,7 +184,7 @@ export default function FactoryPaymentDetails() {
       </div>
 
       {/* Edit Modal */}
-      <FactoryPaymentEditModal 
+      <FactoryPaymentEditModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         payment={payment}

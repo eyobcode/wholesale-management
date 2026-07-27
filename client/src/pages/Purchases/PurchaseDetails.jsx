@@ -206,7 +206,7 @@ export default function PurchaseDetails() {
   };
 
   return (
-    <div className="page-container">
+    <div className="page-container details-page-wrapper">
       {/* Header Area */}
       <div className="details-header">
         <div className="details-header-left">

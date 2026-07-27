@@ -13,7 +13,7 @@ export default function FactoryDetails() {
   const navigate = useNavigate();
   const { data: factory, isLoading, error } = useFactory(id);
   const deleteMutation = useDeleteFactory();
-  
+
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
@@ -44,7 +44,7 @@ export default function FactoryDetails() {
   const renderBalanceBadge = () => {
     const balance = parseFloat(factory.current_balance || 0);
     const currency = factory.initial_balance_currency || 'ETB';
-    
+
     if (balance > 0) return <Badge variant="danger">You Owe {formatCurrency(balance, currency)}</Badge>;
     if (balance < 0) return <Badge variant="success">They Owe {formatCurrency(Math.abs(balance), currency)}</Badge>;
     return <Badge variant="default">Settled</Badge>;
@@ -70,7 +70,7 @@ export default function FactoryDetails() {
   const isActive = factory.is_active === true || factory.is_active === 'true';
 
   return (
-    <div className="middle-class details-page-wrapper">
+    <div className="page-container details-page-wrapper">
       {/* Header Area */}
       <div className="details-header">
         <div className="details-header-left">
@@ -87,17 +87,17 @@ export default function FactoryDetails() {
             <p style={{ color: 'var(--text-muted)' }}>Factory ID: #{factory.id}</p>
           </div>
         </div>
-        
+
         <div className="details-header-actions">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             leftIcon="ri-edit-line"
             onClick={() => setIsEditModalOpen(true)}
           >
             Edit
           </Button>
-          <Button 
-            variant="danger" 
+          <Button
+            variant="danger"
             leftIcon="ri-delete-bin-line"
             onClick={handleDelete}
             disabled={deleteMutation.isLoading}
@@ -105,8 +105,8 @@ export default function FactoryDetails() {
           >
             Delete
           </Button>
-          <Button 
-            variant="primary" 
+          <Button
+            variant="primary"
             leftIcon="ri-money-dollar-circle-line"
             onClick={() => setIsPaymentModalOpen(true)}
           >
@@ -117,7 +117,7 @@ export default function FactoryDetails() {
 
       {/* Grid Layout for details */}
       <div className="details-grid">
-        
+
         {/* Basic Information */}
         <Card>
           <Card.Header title="Basic Information" icon="ri-building-line" />
@@ -202,13 +202,13 @@ export default function FactoryDetails() {
         </Card>
 
       </div>
-      
-      <Modal 
-        isOpen={isEditModalOpen} 
-        onClose={() => setIsEditModalOpen(false)} 
+
+      <Modal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
         title="Edit Factory"
       >
-        <FactoryForm 
+        <FactoryForm
           initialData={factory}
           onCancel={() => setIsEditModalOpen(false)}
           onSuccess={() => setIsEditModalOpen(false)}

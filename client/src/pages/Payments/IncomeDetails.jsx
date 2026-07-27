@@ -92,7 +92,7 @@ export default function IncomeDetails() {
   };
 
   return (
-    <div className="page-container">
+    <div className="page-container details-page-wrapper">
       {/* Header Area */}
       <div className="details-header">
         <div className="details-header-left">
@@ -113,7 +113,7 @@ export default function IncomeDetails() {
             </p>
           </div>
         </div>
-        
+
         <div className="details-header-actions">
           <Button variant="outline" leftIcon="ri-pencil-line" onClick={() => setIsEditModalOpen(true)}>
             Edit
@@ -125,7 +125,7 @@ export default function IncomeDetails() {
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        
+
         {/* Customer Information */}
         <Card>
           <Card.Header title="Customer Information" icon="ri-user-line" />
@@ -134,9 +134,9 @@ export default function IncomeDetails() {
               { label: 'Customer Name', value: income.customer_name },
               { label: 'Receipt Number', value: income.receipt_number },
               { label: 'Sale Invoice', value: income.sale_invoice || '-' },
-              { 
-                label: 'Customer Balance After', 
-                value: <span style={{ fontWeight: 600 }}>{formatCurrency(income.customer_balance_after, income.currency)}</span> 
+              {
+                label: 'Customer Balance After',
+                value: <span style={{ fontWeight: 600 }}>{formatCurrency(income.customer_balance_after, income.currency)}</span>
               }
             ]} />
           </Card.Body>
@@ -147,20 +147,20 @@ export default function IncomeDetails() {
           <Card.Header title="Payment Information" icon="ri-money-dollar-circle-line" />
           <Card.Body>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-              <StatCard 
-                title="Paid Amount" 
-                value={formatCurrency(income.paid_amount, income.currency)} 
+              <StatCard
+                title="Paid Amount"
+                value={formatCurrency(income.paid_amount, income.currency)}
                 icon="ri-wallet-3-line"
                 color="success"
               />
-              <StatCard 
-                title="Payment Method" 
-                value={formatPaymentMethod(income.payment_method)} 
+              <StatCard
+                title="Payment Method"
+                value={formatPaymentMethod(income.payment_method)}
                 icon="ri-bank-card-line"
                 color="primary"
               />
             </div>
-            
+
             <KeyValueGrid items={[
               { label: 'Payment Date', value: formatDate(income.date) },
               { label: 'Currency', value: income.currency },
@@ -184,7 +184,7 @@ export default function IncomeDetails() {
       </div>
 
       {/* Edit Modal */}
-      <IncomeEditModal 
+      <IncomeEditModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         income={income}

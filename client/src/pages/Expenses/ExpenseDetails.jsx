@@ -92,7 +92,7 @@ export default function ExpenseDetails() {
   };
 
   return (
-    <div className="page-container">
+    <div className="page-container details-page-wrapper">
       {/* Header Area */}
       <div className="details-header">
         <div className="details-header-left">
@@ -108,7 +108,7 @@ export default function ExpenseDetails() {
             </p>
           </div>
         </div>
-        
+
         <div className="details-header-actions">
           <Button variant="outline" leftIcon="ri-pencil-line" onClick={() => setIsEditModalOpen(true)}>
             Edit
@@ -120,26 +120,26 @@ export default function ExpenseDetails() {
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        
+
         {/* Information Card */}
         <Card>
           <Card.Header title="Expense Information" icon="ri-file-list-3-line" />
           <Card.Body>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-              <StatCard 
-                title="Amount" 
-                value={formatCurrency(expense.amount, expense.currency)} 
+              <StatCard
+                title="Amount"
+                value={formatCurrency(expense.amount, expense.currency)}
                 icon="ri-wallet-3-line"
                 color="danger"
               />
-              <StatCard 
-                title="Payment Method" 
-                value={formatPaymentMethod(expense.payment_method)} 
+              <StatCard
+                title="Payment Method"
+                value={formatPaymentMethod(expense.payment_method)}
                 icon="ri-bank-card-line"
                 color="primary"
               />
             </div>
-            
+
             <KeyValueGrid items={[
               { label: 'Description', value: expense.description },
               { label: 'Payment Date', value: formatDate(expense.date) },
@@ -173,7 +173,7 @@ export default function ExpenseDetails() {
       </div>
 
       {/* Edit Modal */}
-      <ExpenseEditModal 
+      <ExpenseEditModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         expense={expense}

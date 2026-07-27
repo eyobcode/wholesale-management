@@ -63,22 +63,22 @@ export default function InventorySummary() {
   const parentColumns = [
     { key: 'product_name', title: 'Product Name', sortable: true },
     { key: 'item_code', title: 'Item Code', sortable: true },
-    { 
-      key: 'total_remaining_stock', 
-      title: 'Total Remaining Stock', 
+    {
+      key: 'total_remaining_stock',
+      title: 'Total Remaining Stock',
       sortable: false,
       render: (_, row) => formatRemainingStock(row.total_remaining_bags, row.total_remaining_pieces)
     },
-    { 
-      key: 'total_stock_value', 
-      title: 'Total Stock Value', 
+    {
+      key: 'total_stock_value',
+      title: 'Total Stock Value',
       sortable: false,
       render: (val) => formatCurrency(val)
     },
     { key: 'batch_count', title: 'Batch Count', sortable: false },
-    { 
-      key: 'status', 
-      title: 'Status', 
+    {
+      key: 'status',
+      title: 'Status',
       sortable: false,
       render: (_, row) => renderStatusBadges(row.has_sold_out_batch, row.has_low_stock_batch)
     }
@@ -95,23 +95,23 @@ export default function InventorySummary() {
   const nestedColumns = [
     { key: 'shipping_code', title: 'Shipping Code' },
     { key: 'factory_name', title: 'Factory' },
-    { 
-      key: 'purchase_date', 
+    {
+      key: 'purchase_date',
       title: 'Purchase Date',
       render: (val) => val ? new Date(val).toLocaleDateString() : '-'
     },
-    { 
-      key: 'remaining_stock', 
+    {
+      key: 'remaining_stock',
       title: 'Remaining Stock',
       render: (_, row) => formatRemainingStock(row.remaining_bags, row.remaining_pieces)
     },
-    { 
-      key: 'stock_value', 
+    {
+      key: 'stock_value',
       title: 'Stock Value',
       render: (val) => formatCurrency(val)
     },
-    { 
-      key: 'status', 
+    {
+      key: 'status',
       title: 'Status',
       render: (_, row) => {
         if (!row.is_sold_out && !row.is_low_stock) return <Badge variant="success">Healthy</Badge>;
@@ -254,11 +254,11 @@ export default function InventorySummary() {
       <div className="page-header" style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h1 className="page-title">Inventory Summary</h1>
-          <p className="page-description">Aggregated stock overview by product.</p>
+          <p style={{ color: 'var(--text-muted)' }}>Aggregated stock overview by product.</p>
         </div>
-        <Button 
-          variant="outline" 
-          leftIcon="ri-arrow-left-line" 
+        <Button
+          variant="outline"
+          leftIcon="ri-arrow-left-line"
           onClick={() => navigate('/inventory')}
         >
           Back to Inventory
@@ -271,21 +271,21 @@ export default function InventorySummary() {
           data={data?.results || []}
           isLoading={isLoading}
           keyField="item_code"
-          
+
           searchPlaceholder="Search product or item code..."
           searchValue={search}
           onSearch={(v) => updateURLParams({ search: v, page: 1 })}
-          
+
           filters={filterConfig}
           onFilterChange={handleFilterChange}
-          
+
           sortOptions={sortConfig}
           activeSort={activeSort}
           onSortChange={(val) => updateURLParams({ ordering: val, page: 1 })}
-          
+
           expandedRowId={expandedRowId}
           renderExpandedRow={renderExpandedRow}
-          
+
           pagination={{
             currentPage: page,
             totalPages: data?.total_pages || 1,
